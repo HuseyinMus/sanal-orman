@@ -1,0 +1,56 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Kullanıcılar sadece kendi verilerini okuyabilir
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Ağaçlar - herkes okuyabilir, sadece giriş yapmış kullanıcılar yazabilir
+    match /trees/{treeId} {
+      allow read: if true; // Herkes ağaçları görebilir
+      allow create: if request.auth != null &&
+                   request.resource.data.userId == request.auth.uid &&
+                   request.resource.data.userName is string &&
+                   request.resource.data.name is string &&
+                   request.resource.data.message is string &&
+                   request.resource.data.cityId is string &&
+                   request.resource.data.type is string &&
+                   request.resource.data.x is number &&
+                   request.resource.data.y is number;
+      allow update: if request.auth != null &&
+                   (resource.data.userId == request.auth.uid || // Ağaç sahibi
+                    (request.resource.data.diff(resource.data).affectedKeys()
+                     .hasOnly(['waterLevel', 'healthLevel', 'growthStage', 'lastWatered', 'lastCaredFor', 'totalCareCount', 'lastUpdated', 'message', 'plantedWeather', 'plantedSeason', 'plantedTemperature']))); // Bakım işlemleri
+      allow delete: if request.auth != null &&
+                   resource.data.userId == request.auth.uid;
+    }
+
+    // Beğeniler - herkes okuyabilir, sadece giriş yapmış kullanıcılar yazabilir
+    match /likes/{likeId} {
+      allow read: if true;
+      allow create, update, delete: if request.auth != null &&
+                                   (likeId.matches(request.auth.uid + '_.*') || // userId_treeId formatı
+                                    request.resource.data.userId == request.auth.uid);
+    }
+
+    // Yorumlar - herkes okuyabilir, sadece giriş yapmış kullanıcılar yazabilir
+    match /comments/{commentId} {
+      allow read: if true;
+      allow create: if request.auth != null &&
+                   request.resource.data.userId == request.auth.uid &&
+                   request.resource.data.userName is string &&
+                   request.resource.data.treeId is string &&
+                   request.resource.data.text is string &&
+                   request.resource.data.text.size() <= 200;
+      allow update, delete: if request.auth != null &&
+                           resource.data.userId == request.auth.uid;
+    }
+
+    // Şehir istatistikleri - herkes okuyabilir, sadece sistem yazabilir
+    match /cities/{cityId} {
+      allow read: if true;
+      allow write: if false; // Sadece admin paneli üzerinden güncellenebilir
+    }
+  }
+} 

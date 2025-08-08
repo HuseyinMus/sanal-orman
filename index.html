@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sanal Orman - Türkiye</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="src/styles/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="loading-screen">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <h2>Sanal Orman Yükleniyor...</h2>
+      <p>Doğayı korumak için hazırlanıyoruz</p>
+    </div>
+  </div>
+
+  <!-- Auth Modal -->
+  <div id="auth-modal" class="modal">
+    <div class="modal-content">
+      <div class="auth-container">
+        <div class="auth-header">
+          <h2>🌲 Sanal Ormana Hoş Geldiniz</h2>
+          <p>Türkiye'nin dijital ormanını birlikte büyütelim</p>
+        </div>
+        
+        <div class="auth-tabs">
+          <button class="tab-btn active" data-tab="login">Giriş Yap</button>
+          <button class="tab-btn" data-tab="register">Kayıt Ol</button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="login-form" class="auth-form">
+          <div class="form-group">
+            <label for="login-email">E-posta</label>
+            <input type="email" id="login-email" required>
+          </div>
+          <div class="form-group">
+            <label for="login-password">Şifre</label>
+            <input type="password" id="login-password" required>
+          </div>
+          <button type="submit" class="btn-primary">Giriş Yap</button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="register-form" class="auth-form hidden">
+          <div class="form-group">
+            <label for="register-name">Ad Soyad</label>
+            <input type="text" id="register-name" required>
+          </div>
+          <div class="form-group">
+            <label for="register-email">E-posta</label>
+            <input type="email" id="register-email" required>
+          </div>
+          <div class="form-group">
+            <label for="register-password">Şifre</label>
+            <input type="password" id="register-password" required>
+          </div>
+          <button type="submit" class="btn-primary">Kayıt Ol</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app" class="app hidden">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="header-left">
+          <h1 class="logo">🌳 Sanal Orman</h1>
+          <div class="weather-info">
+            <div class="weather-icon" id="weather-icon">☀️</div>
+            <div class="weather-details">
+              <div class="weather-temp" id="weather-temp">22°C</div>
+              <div class="weather-desc" id="weather-desc">Güneşli</div>
+            </div>
+            <div class="season-indicator" id="season-indicator">🌱</div>
+          </div>
+        </div>
+                  <div class="header-right">
+            <div class="stats-display">
+              <span id="tree-count">0</span> ağaç, 
+              <span id="user-count">0</span> kullanıcı
+            </div>
+            <button id="sound-toggle-btn" class="btn-icon" title="Ses Açık/Kapalı">
+              <span class="icon">🔊</span>
+            </button>
+            <span id="sound-status" class="sound-status">Ses Açık</span>
+            <button id="profile-btn" class="btn-outline">👤 Profilim</button>
+            <button id="logout-btn" class="btn-outline">Çıkış</button>
+          </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- City Selection -->
+      <div id="city-selection" class="city-selection">
+        <div class="city-selection-content">
+          <h2>Türkiye Orman Haritası</h2>
+          <p>Şehirleri tıklayarak ormanları keşfedin ve ağaç dikin</p>
+          
+          <!-- Türkiye Haritası -->
+          <div class="turkey-map-container" id="turkey-map">
+            <!-- Harita buraya yüklenecek -->
+          </div>
+          
+          <!-- Harita Kontrolleri -->
+          <div class="map-controls">
+            <button class="map-control-btn" id="map-zoom-in" title="Yakınlaştır">
+              <i class="icon-plus"></i>
+            </button>
+            <button class="map-control-btn" id="map-zoom-out" title="Uzaklaştır">
+              <i class="icon-minus"></i>
+            </button>
+            <button class="map-control-btn" id="map-reset" title="Sıfırla">
+              <i class="icon-home"></i>
+            </button>
+          </div>
+          
+          <!-- Harita Açıklaması -->
+          <div class="map-legend">
+            <div class="legend-item">
+              <div class="legend-color" style="background: #e0e0e0;"></div>
+              <span>0 Ağaç</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background: #7fb069;"></div>
+              <span>1-5 Ağaç</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background: #4a7c59;"></div>
+              <span>6-10 Ağaç</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background: #2d5a27;"></div>
+              <span>10+ Ağaç</span>
+            </div>
+          </div>
+          
+          <!-- Şehir Seçim Mesajı -->
+          <div class="city-selection-overlay" id="city-selection-overlay">
+            <div class="city-selection-message">
+              <h3>🌲 Şehir Seçin</h3>
+              <p>Ormanınızı büyütmek istediğiniz şehri haritadan seçin</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Forest View -->
+      <div id="forest-view" class="forest-view hidden">
+        <div class="forest-container" id="forest-container">
+          <!-- Hava Efektleri -->
+          <div class="weather-effects">
+            <div class="rain-container" id="rain-container"></div>
+            <div class="snow-container" id="snow-container"></div>
+            <div class="fog-container" id="fog-container"></div>
+            <div class="sun-rays" id="sun-rays"></div>
+          </div>
+          
+          <!-- Orman Katmanları -->
+          <div class="forest-layers">
+            <div class="forest-background"></div>
+            <div class="forest-midground"></div>
+            <div class="forest-foreground"></div>
+          </div>
+          
+          <!-- Ağaçlar buraya gelecek -->
+          <div id="trees-container"></div>
+          
+          <!-- Hayvanlar buraya gelecek -->
+          <div class="animals-container" id="animals-container"></div>
+          
+          <!-- Orman Kontrolleri -->
+          <div class="forest-controls">
+            <div class="current-city-info">
+              <span id="current-city-display">Şehir Seçilmedi</span>
+            </div>
+            <div class="forest-buttons">
+              <button id="back-to-map" class="btn-outline">🗺️ Haritaya Dön</button>
+              <button id="plant-tree-btn" class="btn-primary">🌱 Ağaç Dik</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Plant Tree Modal -->
+  <div id="plant-tree-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="plant-tree-container">
+        <h3>🌱 Yeni Ağaç Dik</h3>
+        <form id="plant-tree-form">
+          <div class="form-group">
+            <label for="tree-name">Ağaç İsmi</label>
+            <input type="text" id="tree-name" placeholder="Ağacınıza bir isim verin" required>
+          </div>
+          <div class="form-group">
+            <label for="tree-message">Mesajınız</label>
+            <textarea id="tree-message" placeholder="Ağacınızla ilgili bir mesaj bırakın" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="tree-type">Ağaç Türü</label>
+            <select id="tree-type" required>
+              <option value="pine">Çam Ağacı</option>
+              <option value="oak">Meşe Ağacı</option>
+              <option value="maple">Akçaağaç</option>
+              <option value="birch">Huş Ağacı</option>
+              <option value="cherry">Kiraz Ağacı</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="button" id="cancel-plant" class="btn-outline">İptal</button>
+            <button type="submit" class="btn-primary">Ağaç Dik</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tree Info Modal -->
+  <div id="tree-info-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="tree-info-container">
+        <div class="tree-info-header">
+          <h3 id="tree-info-name">Ağaç İsmi</h3>
+          <span id="tree-info-date" class="tree-date"></span>
+        </div>
+        <div class="tree-info-content">
+          <p id="tree-info-message">Ağaç mesajı</p>
+          <div class="tree-owner">
+            <span>Diken: </span>
+            <span id="tree-info-owner">Kullanıcı Adı</span>
+          </div>
+
+          <!-- Social Actions -->
+          <div class="social-actions">
+            <button id="like-tree" class="social-btn like-btn">
+              <span class="icon-like">❤️</span>
+              <span id="like-count">0</span>
+            </button>
+            <button id="share-tree" class="social-btn share-btn">
+              <span class="icon-share">📤</span>
+              Paylaş
+            </button>
+            <button id="comment-tree" class="social-btn comment-btn">
+              <span class="icon-comment">💬</span>
+              Yorum Yap
+            </button>
+          </div>
+          
+          <!-- Tree Health Stats -->
+          <div class="tree-stats">
+            <div class="stat-row">
+              <span class="stat-label">💧 Su Seviyesi:</span>
+              <div class="stat-bar">
+                <div id="water-level-bar" class="stat-fill water"></div>
+                <span id="water-level-text">100%</span>
+              </div>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">❤️ Sağlık:</span>
+              <div class="stat-bar">
+                <div id="health-level-bar" class="stat-fill health"></div>
+                <span id="health-level-text">100%</span>
+              </div>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">🌱 Büyüme:</span>
+              <div class="growth-stage">
+                <span id="growth-stage-text">Aşama 1/5</span>
+                <div class="growth-icons" id="growth-icons">
+                  <!-- Will be filled dynamically -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tree Care Actions -->
+          <div class="tree-actions">
+            <button id="water-tree" class="action-btn water-btn">
+              <i class="icon-water"></i>
+              Sula
+            </button>
+            <button id="care-tree" class="action-btn care-btn">
+              <i class="icon-care"></i>
+              Bakım Yap
+            </button>
+            <button id="fertilize-tree" class="action-btn fertilize-btn">
+              <i class="icon-fertilize"></i>
+              Gübreleme
+            </button>
+          </div>
+
+          <!-- Comments Section -->
+          <div class="comments-section">
+            <h4>💬 Yorumlar</h4>
+            <div id="comments-container" class="comments-container">
+              <!-- Yorumlar buraya gelecek -->
+            </div>
+            <div class="comment-form">
+              <textarea id="comment-input" placeholder="Ağaç hakkında yorum yazın..." maxlength="200"></textarea>
+              <button id="submit-comment" class="comment-submit-btn">Gönder</button>
+            </div>
+          </div>
+
+          <!-- Care History -->
+          <div class="care-history">
+            <h4>📊 Bakım Geçmişi</h4>
+            <div class="care-stats">
+              <span>Toplam Bakım: <strong id="total-care-count">0</strong></span>
+              <span>Son Sulama: <strong id="last-watered">-</strong></span>
+              <span>Son Bakım: <strong id="last-cared">-</strong></span>
+            </div>
+          </div>
+        </div>
+        <button id="close-tree-info" class="btn-outline">Kapat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Profile Modal -->
+  <div id="profile-modal" class="modal hidden">
+    <div class="modal-content profile-modal">
+      <div class="modal-header">
+        <h2>👤 Kullanıcı Profili</h2>
+        <button id="close-profile" class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="profile-container">
+          <!-- User Info Section -->
+          <div class="profile-section">
+            <div class="profile-header">
+              <div class="profile-avatar">
+                <span id="user-avatar">👤</span>
+              </div>
+              <div class="profile-info">
+                <h3 id="profile-name">Kullanıcı</h3>
+                <p id="profile-email">email@example.com</p>
+                <p id="profile-join-date">Katılım: 2024</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Statistics Section -->
+          <div class="profile-section">
+            <h3>📊 İstatistiklerim</h3>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon">🌱</div>
+                <div class="stat-value" id="total-trees">0</div>
+                <div class="stat-label">Toplam Ağaç</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">🏙️</div>
+                <div class="stat-value" id="total-cities">0</div>
+                <div class="stat-label">Şehir Sayısı</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-value" id="days-active">0</div>
+                <div class="stat-label">Aktif Gün</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-value" id="achievements-count">0</div>
+                <div class="stat-label">Başarım</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trees by City Section -->
+          <div class="profile-section">
+            <h3>🌳 Şehirlere Göre Ağaçlarım</h3>
+            <div id="trees-by-city" class="trees-by-city">
+              <!-- Will be populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Recent Trees Section -->
+          <div class="profile-section">
+            <h3>🕒 Son Dikilen Ağaçlar</h3>
+            <div id="recent-trees" class="recent-trees">
+              <!-- Will be populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Achievements Section -->
+          <div class="profile-section">
+            <h3>🏆 Başarımlarım</h3>
+            <div id="user-achievements" class="achievements-grid">
+              <!-- Will be populated dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html> 

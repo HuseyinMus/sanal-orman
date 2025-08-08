@@ -1,0 +1,85 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "İstanbul", "id": "istanbul" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[28.5, 40.8], [29.8, 40.8], [29.8, 41.4], [28.5, 41.4], [28.5, 40.8]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Ankara", "id": "ankara" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[32.2, 39.7], [33.2, 39.7], [33.2, 40.2], [32.2, 40.2], [32.2, 39.7]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "İzmir", "id": "izmir" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[26.8, 38.2], [27.8, 38.2], [27.8, 38.7], [26.8, 38.7], [26.8, 38.2]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Bursa", "id": "bursa" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[28.8, 40.0], [29.8, 40.0], [29.8, 40.5], [28.8, 40.5], [28.8, 40.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Antalya", "id": "antalya" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[30.4, 36.7], [31.4, 36.7], [31.4, 37.2], [30.4, 37.2], [30.4, 36.7]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Adana", "id": "adana" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[34.8, 36.8], [35.8, 36.8], [35.8, 37.3], [34.8, 37.3], [34.8, 36.8]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Konya", "id": "konya" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[32.3, 37.7], [33.3, 37.7], [33.3, 38.2], [32.3, 38.2], [32.3, 37.7]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Gaziantep", "id": "gaziantep" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[37.2, 36.9], [38.2, 36.9], [38.2, 37.4], [37.2, 37.4], [37.2, 36.9]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Mersin", "id": "mersin" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[34.2, 36.4], [35.2, 36.4], [35.2, 36.9], [34.2, 36.9], [34.2, 36.4]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Diyarbakır", "id": "diyarbakir" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[40.0, 37.7], [41.0, 37.7], [41.0, 38.2], [40.0, 38.2], [40.0, 37.7]]]
+      }
+    }
+  ]
+} 
